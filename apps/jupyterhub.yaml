@@ -12,7 +12,7 @@ spec:
       helm:
         valueFiles:
           - $values/values/jupyterhub-values.yaml
-    - repoURL: git@github.com:truatlas/argocd-test.git
+    - repoURL: https://github.com/truatlas/argocd-test.git
       targetRevision: HEAD
       ref: values
   destination:
@@ -22,3 +22,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
