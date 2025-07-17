@@ -3,13 +3,16 @@ proxy:
     type: LoadBalancer
     http:
       port: 8080
+
 singleuser:
-  cpu:
-    limit: 1
-    guarantee: 0.5
-  memory:
-    limit: 2G
-    guarantee: 1G
-  storage:
-    dynamic:
-      storageClass: standard
+  profileList:
+    - display_name: "CPU Server"
+      description: "Small CPU instance"
+      kubespawner_override:
+        cpu_limit: 1
+        mem_limit: 2G
+    - display_name: "GPU Server"
+      description: "GPU-enabled instance"
+      kubespawner_override:
+        extra_resource_limits:
+          nvidia.com/gpu: 1
