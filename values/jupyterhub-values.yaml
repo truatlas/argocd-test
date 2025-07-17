@@ -1,0 +1,15 @@
+proxy:
+  service:
+    type: LoadBalancer
+    http:
+      port: 8080
+singleuser:
+  cpu:
+    limit: 1
+    guarantee: 0.5
+  memory:
+    limit: 2G
+    guarantee: 1G
+  storage:
+    dynamic:
+      storageClass: standard
