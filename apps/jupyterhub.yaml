@@ -1,24 +1,44 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: jupyterhub
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: https://hub.jupyter.org/helm-chart/
-      chart: jupyterhub
-      targetRevision: 4.2.0
-      helm:
-        valueFiles:
-          - $values/values/jupyterhub-values.yaml
-    - repoURL: git@github.com:truatlas/argocd-test.git
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: jupyterhub
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+proxy:
+  service:
+    type: LoadBalancer
+    http:
+      port: 8080
+
+singleuser:
+  storage:
+    type: dynamic
+    dynamic:
+      storageClass: standard
+
+  # Профили для выбора при запуске сервера
+  profileList:
+    - display_name: "CPU Server"
+      description: "Standard CPU node"
+      kubespawner_override:
+        node_selector:
+          nodepool: as-cpu
+        cpu_limit: 2
+        mem_limit: 4G
+        cpu_guarantee: 1
+        mem_guarantee: 2G
+
+    - display_name: "GPU Server"
+      description: "GPU node with 1 GPU"
+      kubespawner_override:
+        node_selector:
+          nodepool: as-gpu
+        extra_resource_limits:
+          nvidia.com/gpu: 1
+        cpu_limit: 4
+        mem_limit: 16G
+        cpu_guarantee: 2
+        mem_guarantee: 8G
+
+hub:
+  allowNamedServers: true
+  # Авторизация через логин/пароль
+  config:
+    JupyterHub:
+      authenticator_class: "simple"
+    DummyAuthenticator:
+      password: "moneta123"   # тестовый пароль
