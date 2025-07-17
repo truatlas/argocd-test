@@ -5,14 +5,40 @@ proxy:
       port: 8080
 
 singleuser:
+  storage:
+    type: dynamic
+    dynamic:
+      storageClass: standard
+
+  # Профили для выбора при запуске сервера
   profileList:
     - display_name: "CPU Server"
-      description: "Small CPU instance"
+      description: "Standard CPU node"
       kubespawner_override:
-        cpu_limit: 1
-        mem_limit: 2G
+        node_selector:
+          nodepool: as-cpu
+        cpu_limit: 2
+        mem_limit: 4G
+        cpu_guarantee: 1
+        mem_guarantee: 2G
+
     - display_name: "GPU Server"
-      description: "GPU-enabled instance"
+      description: "GPU node with 1 GPU"
       kubespawner_override:
+        node_selector:
+          nodepool: as-gpu
         extra_resource_limits:
           nvidia.com/gpu: 1
+        cpu_limit: 4
+        mem_limit: 16G
+        cpu_guarantee: 2
+        mem_guarantee: 8G
+
+hub:
+  allowNamedServers: true
+  # Авторизация через логин/пароль
+  config:
+    JupyterHub:
+      authenticator_class: "simple"
+    DummyAuthenticator:
+      password: "moneta123"   # тестовый пароль
